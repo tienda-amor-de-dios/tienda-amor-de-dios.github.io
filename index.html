@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tienda Simple</title>
+    <title>Tienda Amor de Dios</title>
     <meta name="description" content="Tienda online sencilla con pedidos conectados a Google Sheets.">
     <style>
 :root {
@@ -452,8 +452,8 @@ h1 {
   <body>
     <header class="topbar">
       <a class="brand" href="#inicio" aria-label="Inicio">
-        <span class="brand-mark">TS</span>
-        <span>Tienda Simple</span>
+        <span class="brand-mark">AD</span>
+        <span>Amor de Dios</span>
       </a>
       <nav class="nav" aria-label="Principal">
         <a href="#productos">Productos</a>
@@ -465,8 +465,8 @@ h1 {
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow">Pedidos directos a Google Sheets</p>
-          <h1>Tienda lista para recibir pedidos por WhatsApp, mÃ³vil o navegador.</h1>
-          <p>Elige productos, revisa el carrito y envÃ­a el pedido. La informaciÃ³n queda registrada automÃ¡ticamente en tu hoja de cÃ¡lculo.</p>
+          <h1>Tienda solidaria para recibir pedidos online.</h1>
+          <p>Elige productos, revisa el carrito y envia el pedido. La informacion queda registrada automaticamente en la hoja del instituto.</p>
           <a class="primary-link" href="#productos">Ver productos</a>
         </div>
         <div class="hero-media" aria-label="Productos destacados">
@@ -475,7 +475,7 @@ h1 {
       </section>
 
       <section class="section-head" id="productos">
-        <p class="eyebrow">CatÃ¡logo</p>
+        <p class="eyebrow">Catalogo</p>
         <h2>Productos</h2>
       </section>
 
@@ -503,12 +503,12 @@ h1 {
               <input name="name" autocomplete="name" required placeholder="Tu nombre">
             </label>
             <label>
-              TelÃ©fono
+              Telefono
               <input name="phone" autocomplete="tel" required placeholder="+34 600 000 000">
             </label>
             <label>
-              DirecciÃ³n
-              <input name="address" autocomplete="street-address" required placeholder="Calle, nÃºmero, ciudad">
+              Direccion
+              <input name="address" autocomplete="street-address" required placeholder="Calle, numero, ciudad">
             </label>
             <label>
               Notas
@@ -532,7 +532,7 @@ h1 {
           <p class="product-description"></p>
           <div class="product-actions">
             <strong></strong>
-            <button type="button">AÃ±adir</button>
+            <button type="button">Anadir</button>
           </div>
         </div>
       </article>
@@ -562,7 +562,7 @@ const products = [
     id: "sweet-pack",
     name: "Pack dulce",
     category: "Dulces",
-    description: "SelecciÃ³n de galletas, bombones y chocolates.",
+    description: "Seleccion de galletas, bombones y chocolates.",
     price: 16.0,
     image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Pack%20dulce%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23fff4ed%22%2F%3E%0A%20%20%3Crect%20x%3D%22126%22%20y%3D%22138%22%20width%3D%22288%22%20height%3D%22212%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22202%22%20cy%3D%22218%22%20r%3D%2244%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22292%22%20cy%3D%22218%22%20r%3D%2244%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Crect%20x%3D%22184%22%20y%3D%22272%22%20width%3D%22156%22%20height%3D%2242%22%20rx%3D%2214%22%20fill%3D%22%230f766e%22%2F%3E%0A%3C%2Fsvg%3E%0A"
   },
@@ -667,7 +667,7 @@ function renderCart() {
   cartList.innerHTML = "";
 
   if (!items.length) {
-    cartList.innerHTML = '<p class="empty-cart">Todavia no has aÃ±adido productos.</p>';
+    cartList.innerHTML = '<p class="empty-cart">Todavia no has anadido productos.</p>';
     cartTotal.textContent = formatPrice(0);
     return;
   }
@@ -678,12 +678,12 @@ function renderCart() {
     row.innerHTML = `
       <div>
         <p><strong>${item.name}</strong></p>
-        <small>${formatPrice(item.price)} Â· ${formatPrice(item.subtotal)}</small>
+        <small>${formatPrice(item.price)} - ${formatPrice(item.subtotal)}</small>
       </div>
       <div class="quantity-controls" aria-label="Cantidad de ${item.name}">
-        <button type="button" aria-label="Quitar ${item.name}">âˆ’</button>
+        <button type="button" aria-label="Quitar ${item.name}">-</button>
         <span>${item.quantity}</span>
-        <button type="button" aria-label="AÃ±adir ${item.name}">+</button>
+        <button type="button" aria-label="Anadir ${item.name}">+</button>
       </div>
     `;
 
@@ -707,7 +707,7 @@ async function submitOrder(event) {
 
   const items = getCartItems();
   if (!items.length) {
-    setStatus("AÃ±ade al menos un producto antes de enviar.", "error");
+    setStatus("Anade al menos un producto antes de enviar.", "error");
     return;
   }
 
