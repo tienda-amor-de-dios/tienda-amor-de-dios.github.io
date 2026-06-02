@@ -8,7 +8,7 @@
     <style>
 :root {
   color-scheme: light;
-  --bg: #f6f8fb;
+  --bg: #f5f7fb;
   --surface: #ffffff;
   --ink: #202124;
   --muted: #626767;
@@ -18,6 +18,9 @@
   --red: #e30613;
   --green: #159b75;
   --warm: #f2c572;
+  --soft-blue: #eef4ff;
+  --soft-red: #fff1f2;
+  --soft-green: #ecfdf7;
   --shadow: 0 18px 45px rgba(47, 99, 173, 0.12);
 }
 
@@ -78,11 +81,12 @@ button {
   align-items: center;
   gap: 10px;
   font-weight: 800;
+  color: var(--accent);
 }
 
 .brand-logo {
-  width: 46px;
-  height: 46px;
+  width: 54px;
+  height: 40px;
   object-fit: contain;
 }
 
@@ -95,11 +99,14 @@ button {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.92fr);
   align-items: center;
-  gap: clamp(28px, 5vw, 72px);
-  min-height: calc(100vh - 66px);
-  padding: clamp(34px, 6vw, 78px) clamp(18px, 4vw, 52px) 36px;
+  gap: clamp(24px, 5vw, 64px);
+  min-height: min(720px, calc(100vh - 66px));
+  padding: clamp(30px, 5vw, 66px) clamp(18px, 4vw, 52px) 34px;
+  background:
+    linear-gradient(90deg, rgba(47, 99, 173, 0.07), transparent 54%),
+    radial-gradient(circle at 88% 18%, rgba(21, 155, 117, 0.10), transparent 30%);
 }
 
 .hero-copy {
@@ -124,11 +131,12 @@ p {
 }
 
 h1 {
-  max-width: 12ch;
+  max-width: 11ch;
   margin-bottom: 22px;
   font-size: clamp(3rem, 8vw, 6.8rem);
   line-height: 0.92;
   letter-spacing: 0;
+  color: #19345f;
 }
 
 .hero-copy p:not(.eyebrow) {
@@ -137,14 +145,28 @@ h1 {
   font-size: 1.08rem;
 }
 
+.hero-notes {
+  display: grid;
+  gap: 10px;
+  max-width: 560px;
+  margin-top: 20px;
+}
+
 .payment-note,
-.checkout-note {
+.info-note,
+.checkout-notes {
+  margin: 0;
   border-left: 4px solid var(--red);
-  background: rgba(227, 6, 19, 0.06);
+  background: var(--soft-red);
   color: var(--ink);
   padding: 10px 12px;
   border-radius: 0 8px 8px 0;
   font-weight: 700;
+}
+
+.info-note {
+  border-left-color: var(--accent);
+  background: var(--soft-blue);
 }
 
 .primary-link,
@@ -177,7 +199,7 @@ h1 {
 .hero-media {
   align-self: stretch;
   display: grid;
-  min-height: 420px;
+  min-height: 360px;
   place-items: center;
 }
 
@@ -187,7 +209,7 @@ h1 {
 }
 
 .hero-logo-panel {
-  min-height: 360px;
+  min-height: 330px;
   border-radius: 8px;
   background:
     linear-gradient(135deg, rgba(47, 99, 173, 0.10), rgba(21, 155, 117, 0.10)),
@@ -202,13 +224,20 @@ h1 {
 }
 
 .section-head {
-  padding: 24px clamp(18px, 4vw, 52px) 8px;
+  padding: 34px clamp(18px, 4vw, 52px) 8px;
 }
 
 .section-head h2 {
-  margin-bottom: 0;
+  margin-bottom: 8px;
   font-size: clamp(2rem, 5vw, 3.8rem);
   letter-spacing: 0;
+  color: #19345f;
+}
+
+.section-head > p:not(.eyebrow) {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.04rem;
 }
 
 .shop-layout {
@@ -235,6 +264,12 @@ h1 {
 
 .product-card {
   overflow: hidden;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 54px rgba(47, 99, 173, 0.16);
 }
 
 .product-image {
@@ -253,6 +288,7 @@ h1 {
 .product-body h3 {
   margin-bottom: 0;
   font-size: 1.18rem;
+  color: #19345f;
 }
 
 .product-description {
@@ -281,6 +317,7 @@ h1 {
   position: sticky;
   top: 86px;
   padding: 18px;
+  border-top: 4px solid var(--accent);
 }
 
 .panel-title {
@@ -368,9 +405,17 @@ h1 {
   font-size: 1.1rem;
 }
 
-.checkout-note {
+.checkout-notes {
+  display: grid;
+  gap: 8px;
   margin: 0 0 14px;
   font-size: 0.92rem;
+  border-left-color: var(--green);
+  background: var(--soft-green);
+}
+
+.checkout-notes p {
+  margin: 0;
 }
 
 .order-form {
@@ -490,9 +535,12 @@ h1 {
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow">Instituto Amor de Dios Granada</p>
-          <h1>Tienda del centro para pedidos online.</h1>
-          <p>Elige productos, revisa el carrito y envia el pedido. La informacion queda registrada automaticamente en la hoja de pedidos del centro.</p>
-          <p class="payment-note">El pago se realiza en efectivo o por Bizum al entregar el producto, o antes si se acuerda con el centro.</p>
+          <h1>Tienda del centro.</h1>
+          <p>Reserva productos del Instituto Amor de Dios Granada y recoge tu pedido directamente en el centro.</p>
+          <div class="hero-notes" aria-label="Informacion del pedido">
+            <p class="info-note">Todos los productos se recogen en el instituto.</p>
+            <p class="payment-note">Pago en efectivo o Bizum al recoger, salvo acuerdo previo.</p>
+          </div>
           <a class="primary-link" href="#productos">Ver productos</a>
         </div>
         <div class="hero-media hero-logo-panel" aria-label="Amor de Dios Granada">
@@ -502,7 +550,8 @@ h1 {
 
       <section class="section-head" id="productos">
         <p class="eyebrow">Catalogo</p>
-        <h2>Productos</h2>
+        <h2>Productos del centro</h2>
+        <p>Selecciona los articulos y envia la reserva. El equipo del centro confirmara la entrega.</p>
       </section>
 
       <section class="shop-layout">
@@ -523,7 +572,10 @@ h1 {
             <strong id="cartTotal">0,00 â‚¬</strong>
           </div>
 
-          <p class="checkout-note">Pago en efectivo o Bizum al entregar el producto, salvo acuerdo previo.</p>
+          <div class="checkout-notes">
+            <p>Recogida en el Instituto Amor de Dios Granada.</p>
+            <p>Pago en efectivo o Bizum al recoger, salvo acuerdo previo.</p>
+          </div>
 
           <form id="orderForm" class="order-form">
             <label>
@@ -535,8 +587,8 @@ h1 {
               <input name="phone" autocomplete="tel" required placeholder="+34 600 000 000">
             </label>
             <label>
-              Direccion
-              <input name="address" autocomplete="street-address" required placeholder="Calle, numero, ciudad">
+              Curso, grupo o referencia
+              <input name="address" autocomplete="street-address" required placeholder="Ej. 2 ESO B, secretaria o familia">
             </label>
             <label>
               Notas
