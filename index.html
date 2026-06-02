@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tienda Simple</title>
+    <meta name="description" content="Tienda online sencilla con pedidos conectados a Google Sheets.">
+    <style>
+:root {
+  color-scheme: light;
+  --bg: #fbfaf6;
+  --surface: #ffffff;
+  --ink: #202124;
+  --muted: #626767;
+  --line: #dedbd2;
+  --accent: #0f766e;
+  --accent-dark: #0b514c;
+  --warm: #f2c572;
+  --rose: #e97863;
+  --shadow: 0 18px 45px rgba(32, 33, 36, 0.09);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px clamp(18px, 4vw, 52px);
+  border-bottom: 1px solid rgba(222, 219, 210, 0.85);
+  background: rgba(251, 250, 246, 0.92);
+  backdrop-filter: blur(16px);
+}
+
+.brand,
+.nav a,
+.primary-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.brand-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.82rem;
+  letter-spacing: 0;
+}
+
+.nav {
+  display: flex;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.04fr) minmax(320px, 0.96fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+  min-height: calc(100vh - 66px);
+  padding: clamp(34px, 6vw, 78px) clamp(18px, 4vw, 52px) 36px;
+}
+
+.hero-copy {
+  max-width: 720px;
+}
+
+.eyebrow,
+.product-category {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 12ch;
+  margin-bottom: 22px;
+  font-size: clamp(3rem, 8vw, 6.8rem);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.hero-copy p:not(.eyebrow) {
+  max-width: 54ch;
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
+.primary-link,
+.submit-button,
+.product-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  font-weight: 800;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.primary-link {
+  margin-top: 14px;
+  padding: 0 20px;
+}
+
+.primary-link:hover,
+.submit-button:hover,
+.product-actions button:hover {
+  background: var(--accent-dark);
+  transform: translateY(-1px);
+}
+
+.hero-media {
+  align-self: stretch;
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+}
+
+.hero-media img {
+  width: min(100%, 620px);
+  filter: drop-shadow(0 26px 46px rgba(32, 33, 36, 0.14));
+}
+
+.section-head {
+  padding: 24px clamp(18px, 4vw, 52px) 8px;
+}
+
+.section-head h2 {
+  margin-bottom: 0;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  letter-spacing: 0;
+}
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 390px);
+  align-items: start;
+  gap: 26px;
+  padding: 18px clamp(18px, 4vw, 52px) 56px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.product-card,
+.checkout-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.product-card {
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  aspect-ratio: 1.16;
+  object-fit: cover;
+  background: #ece8dc;
+}
+
+.product-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.product-body h3 {
+  margin-bottom: 0;
+  font-size: 1.18rem;
+}
+
+.product-description {
+  min-height: 48px;
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.product-actions strong {
+  white-space: nowrap;
+}
+
+.product-actions button {
+  min-width: 96px;
+  padding: 0 14px;
+}
+
+.checkout-panel {
+  position: sticky;
+  top: 86px;
+  padding: 18px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-title h2 {
+  margin-bottom: 0;
+  font-size: 1.35rem;
+}
+
+.icon-button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.cart-list {
+  display: grid;
+  gap: 10px;
+  min-height: 84px;
+  padding: 18px 0;
+}
+
+.empty-cart {
+  margin: 0;
+  color: var(--muted);
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cart-item p,
+.cart-item small {
+  margin: 0;
+}
+
+.cart-item small {
+  color: var(--muted);
+}
+
+.quantity-controls {
+  display: inline-grid;
+  grid-template-columns: 34px 34px 34px;
+  align-items: center;
+  overflow: hidden;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.quantity-controls button {
+  height: 100%;
+  border: 0;
+  background: white;
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.quantity-controls span {
+  text-align: center;
+}
+
+.totals {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 2px solid var(--ink);
+  font-size: 1.1rem;
+}
+
+.order-form {
+  display: grid;
+  gap: 12px;
+}
+
+.order-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.order-form input,
+.order-form textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  padding: 12px;
+  outline: none;
+}
+
+.order-form input:focus,
+.order-form textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.form-status {
+  min-height: 24px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.form-status.success {
+  color: var(--accent-dark);
+}
+
+.form-status.error {
+  color: #b42318;
+}
+
+@media (max-width: 1060px) {
+  .hero,
+  .shop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  h1 {
+    max-width: 14ch;
+  }
+
+  .hero-media {
+    min-height: 300px;
+  }
+
+  .checkout-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 15vw, 4.6rem);
+  }
+
+  .hero-media {
+    min-height: 230px;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1060px) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+</style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Inicio">
+        <span class="brand-mark">TS</span>
+        <span>Tienda Simple</span>
+      </a>
+      <nav class="nav" aria-label="Principal">
+        <a href="#productos">Productos</a>
+        <a href="#pedido">Pedido</a>
+      </nav>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Pedidos directos a Google Sheets</p>
+          <h1>Tienda lista para recibir pedidos por WhatsApp, mÃ³vil o navegador.</h1>
+          <p>Elige productos, revisa el carrito y envÃ­a el pedido. La informaciÃ³n queda registrada automÃ¡ticamente en tu hoja de cÃ¡lculo.</p>
+          <a class="primary-link" href="#productos">Ver productos</a>
+        </div>
+        <div class="hero-media" aria-label="Productos destacados">
+          <img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20760%20560%22%20role%3D%22img%22%20aria-label%3D%22Mesa%20con%20productos%20de%20tienda%22%3E%0A%20%20%3Crect%20width%3D%22760%22%20height%3D%22560%22%20rx%3D%2236%22%20fill%3D%22%23f7efe2%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M94%20390c80%2052%20190%2078%20330%2070%20100-6%20180-36%20238-78%22%20fill%3D%22none%22%20stroke%3D%22%23d8c6a2%22%20stroke-width%3D%2218%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%3Cellipse%20cx%3D%22388%22%20cy%3D%22388%22%20rx%3D%22256%22%20ry%3D%2248%22%20fill%3D%22%23dac7aa%22%2F%3E%0A%20%20%3Crect%20x%3D%22188%22%20y%3D%22168%22%20width%3D%22178%22%20height%3D%22226%22%20rx%3D%2224%22%20fill%3D%22%230f766e%22%2F%3E%0A%20%20%3Crect%20x%3D%22214%22%20y%3D%22202%22%20width%3D%22126%22%20height%3D%2298%22%20rx%3D%2216%22%20fill%3D%22%23fbfaf6%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M248%20246c22-30%2060-30%2082%200%22%20fill%3D%22none%22%20stroke%3D%22%23e97863%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22248%22%20cy%3D%22352%22%20r%3D%2218%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22302%22%20cy%3D%22352%22%20r%3D%2218%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Crect%20x%3D%22420%22%20y%3D%22116%22%20width%3D%22150%22%20height%3D%22250%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M440%20164h110M440%20198h86M440%20232h106%22%20stroke%3D%22%230f766e%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22496%22%20cy%3D%22304%22%20r%3D%2242%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M497%20266c18-42%2062-52%2084-24%22%20fill%3D%22none%22%20stroke%3D%22%230f766e%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%3Crect%20x%3D%2284%22%20y%3D%22300%22%20width%3D%22162%22%20height%3D%22102%22%20rx%3D%2222%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22128%22%20cy%3D%22300%22%20r%3D%2244%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22180%22%20cy%3D%22294%22%20r%3D%2242%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M604%20300c30-44%2076-38%2090%2018%2010%2042-14%2088-60%20102-42-10-66-48-30-120z%22%20fill%3D%22%230f766e%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M622%20302c20%2034%2022%2072%208%20112%22%20fill%3D%22none%22%20stroke%3D%22%23fbfaf6%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fsvg%3E%0A" alt="Mesa con productos de la tienda">
+        </div>
+      </section>
+
+      <section class="section-head" id="productos">
+        <p class="eyebrow">CatÃ¡logo</p>
+        <h2>Productos</h2>
+      </section>
+
+      <section class="shop-layout">
+        <div class="products-grid" id="productsGrid" aria-live="polite"></div>
+
+        <aside class="checkout-panel" id="pedido" aria-label="Resumen del pedido">
+          <div class="panel-title">
+            <h2>Pedido</h2>
+            <button class="icon-button" id="clearCartBtn" type="button" title="Vaciar carrito" aria-label="Vaciar carrito">
+              <span aria-hidden="true">Ã—</span>
+            </button>
+          </div>
+
+          <div class="cart-list" id="cartList"></div>
+
+          <div class="totals">
+            <span>Total</span>
+            <strong id="cartTotal">0,00 â‚¬</strong>
+          </div>
+
+          <form id="orderForm" class="order-form">
+            <label>
+              Nombre
+              <input name="name" autocomplete="name" required placeholder="Tu nombre">
+            </label>
+            <label>
+              TelÃ©fono
+              <input name="phone" autocomplete="tel" required placeholder="+34 600 000 000">
+            </label>
+            <label>
+              DirecciÃ³n
+              <input name="address" autocomplete="street-address" required placeholder="Calle, nÃºmero, ciudad">
+            </label>
+            <label>
+              Notas
+              <textarea name="notes" rows="3" placeholder="Horario, preferencias o comentarios"></textarea>
+            </label>
+            <button class="submit-button" type="submit">Enviar pedido</button>
+            <p class="form-status" id="formStatus" role="status"></p>
+          </form>
+        </aside>
+      </section>
+    </main>
+
+    <template id="productTemplate">
+      <article class="product-card">
+        <img class="product-image" alt="">
+        <div class="product-body">
+          <div>
+            <p class="product-category"></p>
+            <h3></h3>
+          </div>
+          <p class="product-description"></p>
+          <div class="product-actions">
+            <strong></strong>
+            <button type="button">AÃ±adir</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script>
+const SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzNnT_WwotUg_rXY-aRqAvZytW5k3cE1YfnXyl2c_y9iYjiAHq5NvuTpB-uAb3qT1Ds/exec";
+
+const products = [
+  {
+    id: "box-breakfast",
+    name: "Box desayuno",
+    category: "Regalo",
+    description: "Caja con bolleria, cafe, fruta y tarjeta personalizada.",
+    price: 24.9,
+    image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Box%20desayuno%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23f7efe2%22%2F%3E%0A%20%20%3Crect%20x%3D%2298%22%20y%3D%22146%22%20width%3D%22324%22%20height%3D%22204%22%20rx%3D%2228%22%20fill%3D%22%230f766e%22%2F%3E%0A%20%20%3Crect%20x%3D%22128%22%20y%3D%22176%22%20width%3D%22264%22%20height%3D%22150%22%20rx%3D%2218%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22190%22%20cy%3D%22252%22%20r%3D%2242%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22268%22%20cy%3D%22250%22%20r%3D%2238%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Crect%20x%3D%22306%22%20y%3D%22220%22%20width%3D%2254%22%20height%3D%2276%22%20rx%3D%2212%22%20fill%3D%22%230f766e%22%2F%3E%0A%3C%2Fsvg%3E%0A"
+  },
+  {
+    id: "flowers",
+    name: "Ramo fresco",
+    category: "Flores",
+    description: "Ramo de temporada preparado el mismo dia.",
+    price: 19.5,
+    image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Ramo%20fresco%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23eef5f3%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M182%20350l78-196%2078%20196z%22%20fill%3D%22%230f766e%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22206%22%20cy%3D%22142%22%20r%3D%2242%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22266%22%20cy%3D%22126%22%20r%3D%2248%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22326%22%20cy%3D%22150%22%20r%3D%2242%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M210%20226c44-14%2092-12%20138%206%22%20fill%3D%22none%22%20stroke%3D%22%23fbfaf6%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fsvg%3E%0A"
+  },
+  {
+    id: "sweet-pack",
+    name: "Pack dulce",
+    category: "Dulces",
+    description: "SelecciÃ³n de galletas, bombones y chocolates.",
+    price: 16.0,
+    image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Pack%20dulce%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23fff4ed%22%2F%3E%0A%20%20%3Crect%20x%3D%22126%22%20y%3D%22138%22%20width%3D%22288%22%20height%3D%22212%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22202%22%20cy%3D%22218%22%20r%3D%2244%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22292%22%20cy%3D%22218%22%20r%3D%2244%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Crect%20x%3D%22184%22%20y%3D%22272%22%20width%3D%22156%22%20height%3D%2242%22%20rx%3D%2214%22%20fill%3D%22%230f766e%22%2F%3E%0A%3C%2Fsvg%3E%0A"
+  },
+  {
+    id: "fruit-basket",
+    name: "Cesta de fruta",
+    category: "Fresco",
+    description: "Fruta variada lista para entregar.",
+    price: 21.0,
+    image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Cesta%20de%20fruta%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23f5f8e9%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M128%20220h264l-34%20122H162z%22%20fill%3D%22%23d8a95f%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M166%20220c10-72%20108-104%20184%200%22%20fill%3D%22none%22%20stroke%3D%22%230f766e%22%20stroke-width%3D%2218%22%20stroke-linecap%3D%22round%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22198%22%20cy%3D%22204%22%20r%3D%2236%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22262%22%20cy%3D%22190%22%20r%3D%2240%22%20fill%3D%22%23e97863%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22326%22%20cy%3D%22204%22%20r%3D%2236%22%20fill%3D%22%230f766e%22%2F%3E%0A%3C%2Fsvg%3E%0A"
+  },
+  {
+    id: "coffee-kit",
+    name: "Kit cafetero",
+    category: "Cafe",
+    description: "Cafe molido, taza y snack artesanal.",
+    price: 18.75,
+    image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Kit%20cafetero%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23f3eee6%22%2F%3E%0A%20%20%3Crect%20x%3D%22150%22%20y%3D%22132%22%20width%3D%22150%22%20height%3D%22224%22%20rx%3D%2222%22%20fill%3D%22%230f766e%22%2F%3E%0A%20%20%3Crect%20x%3D%22180%22%20y%3D%22178%22%20width%3D%2290%22%20height%3D%2292%22%20rx%3D%2214%22%20fill%3D%22%23fbfaf6%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M316%20210h44c28%200%2028%2062%200%2062h-44%22%20fill%3D%22none%22%20stroke%3D%22%23e97863%22%20stroke-width%3D%2218%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M196%20232c22-24%2050-24%2072%200%22%20fill%3D%22none%22%20stroke%3D%22%23f2c572%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fsvg%3E%0A"
+  },
+  {
+    id: "custom-box",
+    name: "Caja personalizada",
+    category: "Especial",
+    description: "Arma una caja con los productos que prefieras.",
+    price: 29.0,
+    image: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20520%20448%22%20role%3D%22img%22%20aria-label%3D%22Caja%20personalizada%22%3E%0A%20%20%3Crect%20width%3D%22520%22%20height%3D%22448%22%20fill%3D%22%23eff3fb%22%2F%3E%0A%20%20%3Crect%20x%3D%22120%22%20y%3D%22164%22%20width%3D%22280%22%20height%3D%22190%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M120%20220h280%22%20stroke%3D%22%230f766e%22%20stroke-width%3D%2218%22%2F%3E%0A%20%20%3Cpath%20d%3D%22M260%20164v190%22%20stroke%3D%22%230f766e%22%20stroke-width%3D%2218%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22198%22%20cy%3D%22268%22%20r%3D%2228%22%20fill%3D%22%23f2c572%22%2F%3E%0A%20%20%3Ccircle%20cx%3D%22322%22%20cy%3D%22268%22%20r%3D%2228%22%20fill%3D%22%23e97863%22%2F%3E%0A%3C%2Fsvg%3E%0A"
+  }
+];
+
+const cart = new Map();
+const currency = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" });
+
+const productsGrid = document.querySelector("#productsGrid");
+const productTemplate = document.querySelector("#productTemplate");
+const cartList = document.querySelector("#cartList");
+const cartTotal = document.querySelector("#cartTotal");
+const orderForm = document.querySelector("#orderForm");
+const formStatus = document.querySelector("#formStatus");
+const clearCartBtn = document.querySelector("#clearCartBtn");
+
+function formatPrice(value) {
+  return currency.format(value);
+}
+
+function renderProducts() {
+  productsGrid.innerHTML = "";
+
+  products.forEach((product) => {
+    const node = productTemplate.content.cloneNode(true);
+    const card = node.querySelector(".product-card");
+    const image = node.querySelector(".product-image");
+    const category = node.querySelector(".product-category");
+    const title = node.querySelector("h3");
+    const description = node.querySelector(".product-description");
+    const price = node.querySelector("strong");
+    const button = node.querySelector("button");
+
+    card.dataset.productId = product.id;
+    image.src = product.image;
+    image.alt = product.name;
+    category.textContent = product.category;
+    title.textContent = product.name;
+    description.textContent = product.description;
+    price.textContent = formatPrice(product.price);
+    button.addEventListener("click", () => addToCart(product.id));
+
+    productsGrid.appendChild(node);
+  });
+}
+
+function addToCart(productId) {
+  const current = cart.get(productId) || 0;
+  cart.set(productId, current + 1);
+  renderCart();
+}
+
+function setQuantity(productId, quantity) {
+  if (quantity <= 0) {
+    cart.delete(productId);
+  } else {
+    cart.set(productId, quantity);
+  }
+
+  renderCart();
+}
+
+function getCartItems() {
+  return Array.from(cart.entries()).map(([productId, quantity]) => {
+    const product = products.find((item) => item.id === productId);
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity,
+      subtotal: product.price * quantity
+    };
+  });
+}
+
+function renderCart() {
+  const items = getCartItems();
+  cartList.innerHTML = "";
+
+  if (!items.length) {
+    cartList.innerHTML = '<p class="empty-cart">Todavia no has aÃ±adido productos.</p>';
+    cartTotal.textContent = formatPrice(0);
+    return;
+  }
+
+  items.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      <div>
+        <p><strong>${item.name}</strong></p>
+        <small>${formatPrice(item.price)} Â· ${formatPrice(item.subtotal)}</small>
+      </div>
+      <div class="quantity-controls" aria-label="Cantidad de ${item.name}">
+        <button type="button" aria-label="Quitar ${item.name}">âˆ’</button>
+        <span>${item.quantity}</span>
+        <button type="button" aria-label="AÃ±adir ${item.name}">+</button>
+      </div>
+    `;
+
+    const [decreaseBtn, increaseBtn] = row.querySelectorAll("button");
+    decreaseBtn.addEventListener("click", () => setQuantity(item.id, item.quantity - 1));
+    increaseBtn.addEventListener("click", () => setQuantity(item.id, item.quantity + 1));
+    cartList.appendChild(row);
+  });
+
+  const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+  cartTotal.textContent = formatPrice(total);
+}
+
+function setStatus(message, type = "") {
+  formStatus.textContent = message;
+  formStatus.className = `form-status ${type}`.trim();
+}
+
+async function submitOrder(event) {
+  event.preventDefault();
+
+  const items = getCartItems();
+  if (!items.length) {
+    setStatus("AÃ±ade al menos un producto antes de enviar.", "error");
+    return;
+  }
+
+  if (!SHEETS_WEB_APP_URL) {
+    setStatus("Falta conectar la tienda con Google Sheets.", "error");
+    return;
+  }
+
+  const formData = new FormData(orderForm);
+  const order = {
+    createdAt: new Date().toISOString(),
+    customer: {
+      name: formData.get("name").trim(),
+      phone: formData.get("phone").trim(),
+      address: formData.get("address").trim(),
+      notes: formData.get("notes").trim()
+    },
+    items,
+    total: items.reduce((sum, item) => sum + item.subtotal, 0)
+  };
+
+  const submitButton = orderForm.querySelector("button[type='submit']");
+  submitButton.disabled = true;
+  setStatus("Enviando pedido...");
+
+  try {
+    const response = await fetch(SHEETS_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(order)
+    });
+
+    cart.clear();
+    orderForm.reset();
+    renderCart();
+    setStatus("Pedido enviado correctamente.", "success");
+  } catch (error) {
+    setStatus("No se pudo enviar el pedido. Intentalo otra vez.", "error");
+  } finally {
+    submitButton.disabled = false;
+  }
+}
+
+clearCartBtn.addEventListener("click", () => {
+  cart.clear();
+  renderCart();
+});
+
+orderForm.addEventListener("submit", submitOrder);
+
+renderProducts();
+renderCart();
+
+</script>
+  </body>
+</html>
